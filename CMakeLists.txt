@@ -7,10 +7,17 @@ add_definitions(-std=c++11)
 set(CXX_FLAGS "-Wall")
 set(CMAKE_CXX_FLAGS, "${CXX_FLAGS}")
 
-set(sources src/main.cpp)
+# for CLION: add all source files to executible
+file(GLOB sources
+        src/*.c*
+        src/*.h*
+        )
+
+# remove main application to be added in add_executable command:
+list(REMOVE_ITEM sources "src/main.")
 
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
+if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 include_directories(/usr/local/include)
 include_directories(/usr/local/opt/openssl/include)
@@ -21,6 +28,6 @@ link_directories(/usr/local/Cellar/libuv/1.11.0/lib)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") 
 
 
-add_executable(path_planning ${sources})
+add_executable(path_planning src/main.cpp ${sources})
 
 target_link_libraries(path_planning z ssl uv uWS)
