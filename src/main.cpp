@@ -356,21 +356,20 @@ private:
       this->keepLane = false;
       this->lane++;
     }
-
+    //Adjust the speed if the distance to the car infront is reducing below threshold, emergency break if necessar
     if ((this->keepLane) && (ego.speed > vCarInFront) && (distanceToCarInFront < this->minDistance+10)) {
-
       if(this->eBrake){
         this->vRef -= (this->maxAccel * this->dt + 0.5 * this->maxJerk * this->dt * this->dt)*CONVERTMS2MPH;
       }else{
-        // check how close vRef is to vCarInFront:
+        // check how close vRef is to vCarInFront, if its speed is within ego vehicle's speed range (+/- accel), match its speed, otherwise redcue speed:
         if(fabs(this->vRef*CONVERTMPH2MS - vCarInFront) < this->maxAccel * this->dt){
           this->vRef = vCarInFront*CONVERTMS2MPH;
         }else{
           this->vRef -= (0.5 * this->maxAccel * this->dt)*CONVERTMS2MPH;
         }
-
       }
     }
+    // If there are no Vehicle ahead, and current speed is less than target speed, increase speed:
     else if (this->vRef < this->vTarget  - 0.5 - (this->maxAccel * this->dt - 0.5 * this->maxJerk * this->dt * this->dt)*CONVERTMS2MPH) {
       this->vRef += (this->maxAccel * this->dt + 0.5 * this->maxJerk * this->dt * this->dt)*CONVERTMS2MPH;
     }
@@ -415,7 +414,7 @@ private:
 
     }
 
-    // Add n-points to end of path at 30m increments, thus, the lane change is completed in 30m:
+    // Add n-points to end of path at increments of the forward Horizon:
     for (int i=0; i<3; i++){
       vector<double> wp;
       wp = getXY(ego.s + this->forwardHorizon*(i+1), (2 + 4 * this->lane), this->map_waypoints_s, this->map_waypoints_x, this->map_waypoints_y);
