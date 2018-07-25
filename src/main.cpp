@@ -273,7 +273,7 @@ private:
       if ((car.d < (2 + 4 * (this->lane - 1) + 2)) && (car.d > (2 + 4 * (this->lane - 1) - 2))) {
         // The car is in the left lane to the vehicle
         if (abs(car.s - ego.s) < this->minDistance) {
-          this->leftClear = false;
+        this->leftClear = false;
         }
       }
       else if ((car.d < (2 + 4 * (this->lane + 1) + 2)) && (car.d > (2 + 4 * (this->lane + 1) -2))) {
@@ -352,9 +352,11 @@ private:
      * over to the right lane if it is clear to keep left lanes for passing vehicles.
      * Time in lane ensures low jerk transitions when moving over across all lanes..
      * */
-    if ((startLane==this->lane) && (this->lane < this->numLanes-1) && (this->rightClear) && (this->vRef > 45) && (ego.timeInLane>3)){
+    if ((startLane==this->lane) && (this->lane < this->numLanes-1) && (this->rightClear) && (this->vRef > 45) && (ego.timeInLane>4)){
+      std::cout << "Change Lanes right!\n";
       this->keepLane = false;
       this->lane++;
+      this->vRef -= (0.5 * this->maxAccel * this->dt)*CONVERTMS2MPH;
     }
     //Adjust the speed if the distance to the car infront is reducing below threshold, emergency break if necessar
     if ((this->keepLane) && (ego.speed > vCarInFront) && (distanceToCarInFront < this->minDistance+10)) {
